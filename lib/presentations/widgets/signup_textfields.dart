@@ -5,7 +5,7 @@ class SignUpTextFields extends StatelessWidget {
   TextEditingController controller;
   String hintText;
   String? Function(String?)? validator;
-  final TextInputType? KeyboardType;
+  final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   SignUpTextFields(
       {super.key,
@@ -13,14 +13,15 @@ class SignUpTextFields extends StatelessWidget {
       required this.validator,
       required this.hintText,
       this.inputFormatters,
-      this.KeyboardType,
+      this.keyboardType,
       TextStyle? hintStyle});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-        keyboardType: KeyboardType,
+        keyboardType: keyboardType,
         autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: validator,
         controller: controller,
         inputFormatters: inputFormatters,
         decoration: InputDecoration(
