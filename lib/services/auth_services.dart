@@ -2,8 +2,9 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:stockflow/core/theme/text_styles.dart';
-import 'package:stockflow/presentations/screens/login_Page.dart';
+import 'package:stockflow/utils/theme/text_styles.dart';
+
+import 'package:stockflow/views/screens/login_Page.dart';
 
 class AuthServices {
   final _auth = FirebaseAuth.instance;

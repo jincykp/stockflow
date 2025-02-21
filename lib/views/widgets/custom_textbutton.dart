@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockflow/core/theme/colors.dart';
+import 'package:stockflow/utils/theme/colors.dart';
 
 class CustomTextButton extends StatelessWidget {
   final String text;

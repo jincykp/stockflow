@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:stockflow/core/theme/colors.dart';
-import 'package:stockflow/data/repositories/auth_services.dart';
-import 'package:stockflow/presentations/screens/login_Page.dart';
-import 'package:stockflow/presentations/widgets/custom_buttons.dart';
-import 'package:stockflow/presentations/widgets/signup_textfields.dart';
+import 'package:stockflow/services/auth_services.dart';
+import 'package:stockflow/utils/theme/colors.dart';
+import 'package:stockflow/views/screens/login_Page.dart';
+import 'package:stockflow/views/widgets/custom_buttons.dart';
+import 'package:stockflow/views/widgets/signup_textfields.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockflow/core/theme/colors.dart';
+import 'package:stockflow/utils/theme/colors.dart';
 
 class AppTextStyles {
   static const TextStyle heading = TextStyle(
@@ -26,10 +26,10 @@ class AppTextStyles {
     color: AppColors.warningColor, // Uses warning color (red)
   );
 
-  static const TextStyle buttonText = TextStyle(
-    fontSize: 16,
+  static const TextStyle appBarText = TextStyle(
+    fontSize: 20,
     fontWeight: FontWeight.w500,
-    color: AppColors.textColor, // Uses white text
+    // Uses white text
   );
 
   static const TextStyle smallText = TextStyle(
@@ -51,5 +51,10 @@ class AppTextStyles {
     fontSize: 15,
     fontWeight: FontWeight.bold,
     color: AppColors.primaryColor, // Uses primary color
+  );
+  static const TextStyle bottomNavItmes = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textColor, // Uses primary color
   );
 }
