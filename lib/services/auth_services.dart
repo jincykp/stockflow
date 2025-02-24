@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:stockflow/services/auth_state_manager.dart';
 import 'package:stockflow/utils/theme/text_styles.dart';
 
 import 'package:stockflow/views/screens/login_Page.dart';
@@ -54,21 +55,35 @@ class AuthServices {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Close dialog
-                await _auth.signOut(); // Perform logout
 
-                // Navigate to SignInScreen and clear all previous screens
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                );
+                try {
+                  await _auth.signOut(); // Firebase signout
+                  await AuthStateManager
+                      .setLoggedOut(); // Update SharedPreferences state
+
+                  // Navigate to LoginPage and clear all previous screens
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    (route) => false, // This removes all previous routes
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error signing out: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
-              child: const Text("Logout"),
+              child:
+                  const Text("Logout", style: AppTextStyles.logoutTwoButtons),
             ),
           ],
         );
       },
     );
-  } // Reset password
+  }
 
   Future<String> resetPassword(String email) async {
     try {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockflow/viewmodel/add_product_provider.dart';
+import 'package:stockflow/viewmodel/product_provider.dart';
 import 'package:stockflow/views/screens/login_Page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:stockflow/views/screens/splash_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const LoginPage(),
+        home: SplashScreen(),
       ),
     );
   }

@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stockflow/viewmodel/add_product_provider.dart';
+import 'package:stockflow/utils/theme/colors.dart';
+import 'package:stockflow/viewmodel/product_provider.dart';
+import 'package:stockflow/views/screens/product_fullview.dart';
 import 'package:stockflow/views/widgets/custom_appbar.dart';
 
 class Product extends StatelessWidget {
@@ -22,7 +24,9 @@ class Product extends StatelessWidget {
 
           if (productProvider.isLoading) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: AppColors.primaryColor,
+              ),
             );
           }
 
@@ -34,7 +38,7 @@ class Product extends StatelessWidget {
                   Text(
                     productProvider.error,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.red),
+                    style: const TextStyle(color: AppColors.warningColor),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -59,75 +63,87 @@ class Product extends StatelessWidget {
               itemCount: productProvider.products.length,
               itemBuilder: (context, index) {
                 final product = productProvider.products[index];
-                return Card(
-                  elevation: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                product.name,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _getStockStatusColor(product.quantity),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                'Qty: ${product.quantity}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductDetailScreen(
+                          product: product,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          product.description,
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 14,
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  product.name,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _getStockStatusColor(product.quantity),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  'Qty: ${product.quantity}',
+                                  style: const TextStyle(
+                                    color: AppColors.textColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '\$${product.price.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
+                          const SizedBox(height: 8),
+                          Text(
+                            product.description,
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 14,
                             ),
-                            Text(
-                              _formatDate(product.createdAt),
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 12,
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '\$${product.price.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                              Text(
+                                _formatDate(product.createdAt),
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

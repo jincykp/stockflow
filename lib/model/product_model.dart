@@ -1,44 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductModel {
-  String id;
-  String name;
-  String description;
-  int quantity;
-  double price;
-  Timestamp createdAt; // Add this field
+  final String id;
+  final String userId;
+  final String name;
+  final String description;
+  final int quantity;
+  final double price;
+  final Timestamp createdAt;
 
   ProductModel({
     required this.id,
+    required this.userId,
     required this.name,
     required this.description,
     required this.quantity,
     required this.price,
-    required this.createdAt, // Add this field
+    required this.createdAt,
   });
 
-  // Convert the model to a map for Firestore
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'userId': userId,
       'name': name,
       'description': description,
       'quantity': quantity,
       'price': price,
-      'createdAt': createdAt, // Ensure this is included
+      'createdAt': createdAt,
     };
   }
 
-  // Factory constructor to create a ProductModel from a Firestore document
-  factory ProductModel.fromMap(Map<String, dynamic> map, String documentId) {
+  factory ProductModel.fromSnapshot(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return ProductModel(
-      id: documentId,
-      name: map['name'],
-      description: map['description'],
-      quantity: map['quantity'],
-      price: map['price'].toDouble(),
-      createdAt:
-          map['createdAt'] ?? Timestamp.now(), // Default to now if missing
+      id: doc.id,
+      userId: data['userId'] ?? '',
+      name: data['name'] ?? '',
+      description: data['description'] ?? '',
+      quantity: (data['quantity'] ?? 0).toInt(),
+      price: (data['price'] ?? 0.0).toDouble(),
+      createdAt: data['createdAt'] as Timestamp,
     );
   }
 }

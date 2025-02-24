@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stockflow/repositories/product_repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -86,8 +87,19 @@ class _AddProductState extends State<AddProduct> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
+      // Get current user ID from Firebase Auth
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("User not authenticated!")),
+        );
+        setState(() => _isLoading = false);
+        return;
+      }
+
       final newProduct = ProductModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(), // Unique ID
+        userId: currentUser.uid, // Add the current user's ID here
         name: nameController.text.trim(),
         description: descriptionController.text.trim(),
         quantity: int.parse(quantityController.text.trim()),

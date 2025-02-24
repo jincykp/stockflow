@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockflow/services/auth_services.dart';
+import 'package:stockflow/services/auth_state_manager.dart';
 import 'package:stockflow/utils/theme/colors.dart';
 import 'package:stockflow/utils/theme/spacing.dart';
 import 'package:stockflow/views/screens/home_page.dart';
@@ -97,22 +98,24 @@ class _SignupPageState extends State<SignupPage> {
                       CustomButtons(
                           text: "Signup",
                           onPressed: () {
+                            // In your SignupPage, modify the successful signup handler:
                             if (formKey.currentState!.validate()) {
                               authServices
                                   .createUserWithEmailAndPassword(
                                 emailController.text,
                                 passwordController.text,
                               )
-                                  .then((_) {
+                                  .then((_) async {
+                                await AuthStateManager
+                                    .setLoggedIn(); // Set login state
                                 Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => HomePage()),
-                                  (route) =>
-                                      false, // Remove all previous routes
+                                  (route) => false,
                                 );
                               }).catchError((error) {
-                                print("Signup Error: $error"); // Handle errors
+                                print("Signup Error: $error");
                               });
                             }
                           },
