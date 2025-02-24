@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockflow/utils/theme/colors.dart';
@@ -11,23 +12,25 @@ class Product extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      debugPrint('👤 Initializing with user: ${user.uid}');
+      Provider.of<ProductProvider>(context, listen: false).initialize(user.uid);
+    }
+
     return Scaffold(
       appBar: CustomAppBar(title: "Products"),
       body: Consumer<ProductProvider>(
         builder: (context, productProvider, child) {
+          debugPrint('🏗️ Product Widget rebuilt'); // Add this
+
           // Initial fetch
           if (productProvider.products.isEmpty && !productProvider.isLoading) {
+            debugPrint('📱 Triggering initial fetch'); // Add this
             WidgetsBinding.instance.addPostFrameCallback((_) {
+              debugPrint('🔄 Post frame callback triggered'); // Add this
               productProvider.fetchProducts();
             });
-          }
-
-          if (productProvider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primaryColor,
-              ),
-            );
           }
 
           if (productProvider.error.isNotEmpty) {

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:stockflow/model/product_model.dart';
 
@@ -18,34 +19,62 @@ class ProductRepository {
   }
 
   // Fetch products for specific user
-
-  Future<List<ProductModel>> fetchProducts(String userId) async {
+  Future<List<ProductModel>> fetchingProducts(String userId) async {
     try {
-      debugPrint('Attempting to fetch products for userId: $userId');
+      // Debug Point 1: Check input userId
+      debugPrint('\n[DEBUG] Starting fetch with userId: $userId');
 
+      // Debug Point 2: Verify Firebase Auth
+      final currentAuthUser = FirebaseAuth.instance.currentUser;
+      debugPrint('[DEBUG] Current Auth User ID: ${currentAuthUser?.uid}');
+      if (currentAuthUser == null) {
+        debugPrint('[DEBUG] ⚠️ No authenticated user found!');
+        return [];
+      }
+
+      // Debug Point 3: Verify collection reference
+      debugPrint('[DEBUG] Querying collection: $collection');
+
+      // Debug Point 4: Execute query
+      debugPrint('[DEBUG] Executing Firestore query...');
       final QuerySnapshot snapshot = await _firestore
           .collection(collection)
           .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .get();
 
-      debugPrint('Fetched ${snapshot.docs.length} documents');
+      // Debug Point 5: Check query results
+      debugPrint('[DEBUG] Query returned ${snapshot.docs.length} documents');
 
-      final products = snapshot.docs.map((doc) {
-        try {
-          return ProductModel.fromSnapshot(doc);
-        } catch (e) {
-          debugPrint('Error parsing document ${doc.id}: $e');
-          debugPrint('Document data: ${doc.data()}');
-          rethrow;
+      if (snapshot.docs.isEmpty) {
+        debugPrint('[DEBUG] ⚠️ No documents found for this user!');
+        // Print a sample query to verify
+        final sampleDocs =
+            await _firestore.collection(collection).limit(1).get();
+        if (sampleDocs.docs.isNotEmpty) {
+          debugPrint(
+              '[DEBUG] Sample document data: ${sampleDocs.docs.first.data()}');
         }
-      }).toList();
+      }
 
-      debugPrint('Successfully parsed ${products.length} products');
+      // Debug Point 6: Document conversion
+      final List<ProductModel> products = [];
+      for (var doc in snapshot.docs) {
+        try {
+          debugPrint('\n[DEBUG] Converting doc ${doc.id}');
+          debugPrint('[DEBUG] Document data: ${doc.data()}');
+          final product = ProductModel.fromSnapshot(doc);
+          products.add(product);
+          debugPrint('[DEBUG] ✅ Successfully converted document');
+        } catch (e) {
+          debugPrint('[DEBUG] ❌ Error converting document: $e');
+        }
+      }
+
+      debugPrint('[DEBUG] Final products count: ${products.length}');
       return products;
     } catch (e) {
-      debugPrint('Error in fetchProducts: $e');
-      throw Exception("Failed to fetch products: $e");
+      debugPrint('[DEBUG] ❌ Fatal error in fetchProducts: $e');
+      rethrow;
     }
   }
 
@@ -73,7 +102,8 @@ class ProductRepository {
         throw Exception("Unauthorized to delete this product");
       }
     } catch (e) {
-      throw Exception("Failed to delete product: $e");
+      throw Exception(
+          "Failed to delete product: $e"); // Fixed typo: Excepetion -> Exception
     }
   }
 }

@@ -23,7 +23,10 @@ class ProductProvider extends ChangeNotifier {
   }
 
   Future<void> fetchProducts() async {
+    debugPrint('⚡️ PROVIDER: fetchProducts called'); // Add this line first
+
     if (_currentUserId == null || _currentUserId!.isEmpty) {
+      debugPrint('❌ PROVIDER: No user ID found'); // Add this
       _error = 'User not authenticated';
       notifyListeners();
       return;
@@ -34,12 +37,12 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      debugPrint('Fetching products for user: $_currentUserId');
-      _products = await _repository.fetchProducts(_currentUserId!);
-      debugPrint('Fetched ${_products.length} products');
+      debugPrint('👤 PROVIDER: Current user ID: $_currentUserId');
+      _products = await _repository.fetchingProducts(_currentUserId!);
+      debugPrint('✅ PROVIDER: Fetch completed');
     } catch (e) {
+      debugPrint('❌ PROVIDER: Error - $e');
       _error = 'Failed to fetch products: $e';
-      debugPrint(_error);
     } finally {
       _isLoading = false;
       notifyListeners();
