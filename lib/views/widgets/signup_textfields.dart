@@ -7,14 +7,15 @@ class SignUpTextFields extends StatelessWidget {
   String? Function(String?)? validator;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
-  SignUpTextFields(
-      {super.key,
-      required this.controller,
-      required this.validator,
-      required this.hintText,
-      this.inputFormatters,
-      this.keyboardType,
-      TextStyle? hintStyle});
+  SignUpTextFields({
+    super.key,
+    required this.controller,
+    required this.validator,
+    required this.hintText,
+    this.inputFormatters,
+    this.keyboardType,
+    TextStyle? hintStyle,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockflow/viewmodel/customer_provider.dart';
 import 'package:stockflow/viewmodel/product_provider.dart';
 import 'package:stockflow/views/screens/login_Page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,7 +25,6 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) {
-            debugPrint('🏭 Creating ProductProvider');
             final provider = ProductProvider();
             // Initialize with current user
             final user = FirebaseAuth.instance.currentUser;
@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
             return provider;
           },
         ),
+        ChangeNotifierProvider(create: (_) => CustomerProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

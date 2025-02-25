@@ -84,6 +84,7 @@ class _ProductState extends State<Product> {
               ],
             )
           : AppBar(
+              foregroundColor: AppColors.textColor,
               backgroundColor: AppColors.primaryColor,
               title: const Text(
                 "Products",
@@ -139,8 +140,10 @@ class _ProductState extends State<Product> {
           }
 
           if (productProvider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primaryColor,
+              ),
             );
           }
 

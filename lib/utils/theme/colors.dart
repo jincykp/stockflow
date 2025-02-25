@@ -14,4 +14,6 @@ class AppColors {
   static const Color successColor = Colors.green;
   static const Color specialColor = Color.fromARGB(255, 236, 215, 22);
   static const Color mediumColor = Colors.orange;
+
+  static var backgroundColor;
 }
