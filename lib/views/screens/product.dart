@@ -89,6 +89,7 @@ class _ProductState extends State<Product> {
               title: const Text(
                 "Products",
                 style: TextStyle(
+                  fontWeight: FontWeight.bold,
                   color: AppColors.textColor,
                 ),
               ),

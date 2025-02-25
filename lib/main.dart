@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockflow/repositories/sales_repositories.dart';
 import 'package:stockflow/viewmodel/customer_provider.dart';
 import 'package:stockflow/viewmodel/product_provider.dart';
-import 'package:stockflow/views/screens/login_Page.dart';
+import 'package:stockflow/viewmodel/sales_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:stockflow/views/screens/splash_screen.dart';
 import 'firebase_options.dart';
@@ -38,6 +39,9 @@ class MyApp extends StatelessWidget {
           },
         ),
         ChangeNotifierProvider(create: (_) => CustomerProvider()),
+        ChangeNotifierProvider(
+          create: (_) => SalesProvider(SalesRepository()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

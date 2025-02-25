@@ -5,7 +5,7 @@ import 'package:stockflow/utils/theme/text_styles.dart';
 import 'package:stockflow/views/screens/add_product.dart';
 import 'package:stockflow/views/screens/customers.dart';
 import 'package:stockflow/views/screens/product.dart';
-import 'package:stockflow/views/screens/report.dart';
+import 'package:stockflow/views/screens/sales_report.dart';
 import 'package:stockflow/views/screens/services.dart';
 
 class HomePage extends StatelessWidget {
@@ -74,7 +74,7 @@ class HomePage extends StatelessWidget {
           children: [
             _buildNavItem(context, Icons.shopping_bag, 'Product', Product()),
             _buildNavItem(context, Icons.people, 'Customers', Customers()),
-            _buildNavItem(context, Icons.bar_chart, 'Report', Report()),
+            _buildNavItem(context, Icons.bar_chart, 'Sales', SalesReport()),
             _buildNavItem(
                 context, Icons.miscellaneous_services, 'Services', Services()),
           ],
