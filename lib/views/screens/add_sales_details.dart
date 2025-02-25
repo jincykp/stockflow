@@ -9,7 +9,6 @@ import 'package:stockflow/viewmodel/customer_provider.dart';
 import 'package:stockflow/viewmodel/product_provider.dart';
 import 'package:stockflow/viewmodel/sales_provider.dart';
 import 'package:stockflow/views/widgets/custom_appbar.dart';
-import 'package:stockflow/views/widgets/custom_buttons.dart';
 
 class AddSalesDetails extends StatefulWidget {
   const AddSalesDetails({super.key});

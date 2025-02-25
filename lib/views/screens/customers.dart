@@ -37,7 +37,7 @@ class _CustomersState extends State<Customers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'StockFlow'),
+      appBar: CustomAppBar(title: 'Customers'),
       body: Consumer<CustomerProvider>(
         builder: (context, customerProvider, child) {
           if (customerProvider.isLoading) {
@@ -142,7 +142,8 @@ class _CustomersState extends State<Customers> {
             if (customer.email.isNotEmpty)
               Row(
                 children: [
-                  Icon(Icons.email_outlined, size: 16, color: Colors.grey),
+                  Icon(Icons.email_outlined,
+                      size: 16, color: AppColors.specialColor),
                   SizedBox(width: 4),
                   Text(customer.email),
                 ],
@@ -150,7 +151,8 @@ class _CustomersState extends State<Customers> {
             if (customer.phone.isNotEmpty)
               Row(
                 children: [
-                  Icon(Icons.phone_outlined, size: 16, color: Colors.grey),
+                  Icon(Icons.phone_outlined,
+                      size: 16, color: AppColors.mediumColor),
                   SizedBox(width: 4),
                   Text(customer.phone),
                 ],
