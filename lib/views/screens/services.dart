@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockflow/views/screens/sales_report_screen.dart';
+import 'package:stockflow/views/screens/sales_report.dart';
 import 'package:stockflow/views/widgets/custom_appbar.dart';
 import 'package:stockflow/views/widgets/service_card.dart';
 

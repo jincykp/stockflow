@@ -5,7 +5,9 @@ import 'package:stockflow/services/auth_state_manager.dart';
 import 'package:stockflow/utils/theme/colors.dart';
 import 'package:stockflow/utils/theme/spacing.dart';
 import 'package:stockflow/views/screens/home_page.dart';
+import 'package:stockflow/views/screens/login_Page.dart';
 import 'package:stockflow/views/widgets/custom_buttons.dart';
+import 'package:stockflow/views/widgets/custom_textbutton.dart';
 import 'package:stockflow/views/widgets/signup_textfields.dart';
 
 class SignupPage extends StatefulWidget {
@@ -124,6 +126,24 @@ class _SignupPageState extends State<SignupPage> {
                           screenWidth: screenWidth,
                           screenHeight: screenHeight),
                       Spacing.heightsecond,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Already have an account',
+                            style: TextStyle(fontSize: 11),
+                          ),
+                          CustomTextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  (MaterialPageRoute(
+                                      builder: (context) => LoginPage())));
+                            },
+                            text: 'Login',
+                          )
+                        ],
+                      ),
                     ],
                   ),
                 ),
