@@ -21,6 +21,34 @@ class _SignupPageState extends State<SignupPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   AuthServices authServices = AuthServices();
+  bool _isLoading = false;
+  void _signup() async {
+    if (!formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true; // Start loading
+    });
+
+    try {
+      await authServices.createUserWithEmailAndPassword(
+        emailController.text,
+        passwordController.text,
+      );
+      await AuthStateManager.setLoggedIn(); // Set login state
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+        (route) => false,
+      );
+    } catch (error) {
+      print("Signup Error: $error");
+      // Optional: Show error message to user
+    } finally {
+      setState(() {
+        _isLoading = false; // Stop loading regardless of success/failure
+      });
+    }
+  }
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
@@ -75,7 +103,7 @@ class _SignupPageState extends State<SignupPage> {
                           }
                           return null;
                         },
-                        hintText: "email",
+                        hintText: "Email",
                       ),
                       Spacing.heightsecond,
                       SignUpTextFields(
@@ -90,7 +118,7 @@ class _SignupPageState extends State<SignupPage> {
                           }
                           return null;
                         },
-                        hintText: "password",
+                        hintText: "Password",
                         inputFormatters: [
                           FilteringTextInputFormatter.deny(RegExp(r'\s')),
                           LengthLimitingTextInputFormatter(6)
@@ -98,40 +126,21 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       Spacing.heightsecond,
                       CustomButtons(
-                          text: "Signup",
-                          onPressed: () {
-                            // In your SignupPage, modify the successful signup handler:
-                            if (formKey.currentState!.validate()) {
-                              authServices
-                                  .createUserWithEmailAndPassword(
-                                emailController.text,
-                                passwordController.text,
-                              )
-                                  .then((_) async {
-                                await AuthStateManager
-                                    .setLoggedIn(); // Set login state
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomePage()),
-                                  (route) => false,
-                                );
-                              }).catchError((error) {
-                                print("Signup Error: $error");
-                              });
-                            }
-                          },
-                          backgroundColor: AppColors.primaryColor,
-                          textColor: AppColors.textColor,
-                          screenWidth: screenWidth,
-                          screenHeight: screenHeight),
+                        text: "Signup",
+                        onPressed: _isLoading ? null : _signup,
+                        backgroundColor: AppColors.primaryColor,
+                        textColor: AppColors.textColor,
+                        screenWidth: screenWidth,
+                        screenHeight: screenHeight,
+                        isLoading: _isLoading, // Add this parameter
+                      ),
                       Spacing.heightsecond,
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Already have an account',
-                            style: TextStyle(fontSize: 11),
+                            'Already have an account?',
+                            style: TextStyle(fontSize: 12),
                           ),
                           CustomTextButton(
                             onPressed: () {

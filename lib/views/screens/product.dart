@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:stockflow/model/product_model.dart';
 import 'package:stockflow/utils/theme/colors.dart';
 import 'package:stockflow/viewmodel/product_provider.dart';
+import 'package:stockflow/views/screens/add_product.dart';
 import 'package:stockflow/views/screens/product_fullview.dart';
 
 class Product extends StatefulWidget {
@@ -18,6 +19,7 @@ class _ProductState extends State<Product> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _isSearching = false;
+  bool _initialFetchDone = false;
 
   @override
   void dispose() {
@@ -111,13 +113,22 @@ class _ProductState extends State<Product> {
         builder: (context, productProvider, child) {
           debugPrint(' Product Widget rebuilt');
 
-          // Initial fetch
-          if (productProvider.products.isEmpty && !productProvider.isLoading) {
+          // Check if we need to fetch data first
+          if (productProvider.products.isEmpty &&
+              !productProvider.isLoading &&
+              productProvider.error.isEmpty &&
+              !_initialFetchDone) {
             debugPrint(' Triggering initial fetch');
+            _initialFetchDone = true; // Prevent multiple fetch calls
             WidgetsBinding.instance.addPostFrameCallback((_) {
               debugPrint(' Post frame callback triggered');
               productProvider.fetchProducts();
             });
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primaryColor,
+              ),
+            );
           }
 
           if (productProvider.error.isNotEmpty) {
@@ -156,9 +167,27 @@ class _ProductState extends State<Product> {
                       product.description.toLowerCase().contains(_searchQuery);
                 }).toList();
 
+          // Handle empty states after all data operations
           if (productProvider.products.isEmpty) {
-            return const Center(
-              child: Text('No products found'),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.inventory_2_outlined,
+                    size: 44,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No products found',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
             );
           }
 
@@ -181,14 +210,22 @@ class _ProductState extends State<Product> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  ElevatedButton.icon(
                     onPressed: () {
                       setState(() {
                         _searchQuery = '';
                         _searchController.clear();
+                        if (_isSearching) {
+                          _isSearching = false;
+                        }
                       });
                     },
-                    child: const Text('Clear Search'),
+                    icon: const Icon(Icons.clear),
+                    label: const Text('Clear Search'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryShadeTwoColor,
+                      foregroundColor: AppColors.textColor,
+                    ),
                   ),
                 ],
               ),
@@ -231,6 +268,16 @@ class _ProductState extends State<Product> {
             ],
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AddProduct()));
+        },
+        child: const Icon(Icons.add),
+        backgroundColor: AppColors.primaryShadeTwoColor,
+        foregroundColor: AppColors.textColor,
+        shape: const CircleBorder(),
       ),
     );
   }

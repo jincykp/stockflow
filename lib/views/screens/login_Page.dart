@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                               }
                               return null;
                             },
-                            hintText: "email",
+                            hintText: "Email",
                           ),
                           Spacing.heightsecond,
                           SignUpTextFields(
@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                               FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               LengthLimitingTextInputFormatter(6)
                             ],
-                            hintText: "password",
+                            hintText: "Password",
                           ),
                           Spacing.heightsecond,
                           CustomTextButton(
@@ -115,19 +115,21 @@ class _LoginPageState extends State<LoginPage> {
                               }),
                           Spacing.heightfirst,
                           CustomButtons(
-                              text: "Login",
-                              onPressed: _handleLogin,
-                              backgroundColor: AppColors.primaryColor,
-                              textColor: AppColors.textColor,
-                              screenWidth: screenWidth,
-                              screenHeight: screenHeight),
+                            text: "Login",
+                            onPressed: isLoading ? null : _handleLogin,
+                            backgroundColor: AppColors.primaryColor,
+                            textColor: AppColors.textColor,
+                            screenWidth: screenWidth,
+                            screenHeight: screenHeight,
+                            isLoading: isLoading, // Add this parameter
+                          ),
                           Spacing.heightsecond,
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 "You don't have an account?",
-                                style: TextStyle(fontSize: 11),
+                                style: TextStyle(fontSize: 12),
                               ),
                               CustomTextButton(
                                   text: "Sign Up",
@@ -171,6 +173,10 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _handleLogin() async {
     if (formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true; // Start loading
+      });
+
       try {
         final user = await authServices.logInUserWithEmailAndPassword(
           emailController.text,
@@ -187,6 +193,10 @@ class _LoginPageState extends State<LoginPage> {
         }
       } catch (e) {
         _showErrorSnackBar('Email or password does not match');
+      } finally {
+        setState(() {
+          isLoading = false; // Stop loading
+        });
       }
     }
   }

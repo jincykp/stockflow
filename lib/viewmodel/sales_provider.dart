@@ -25,7 +25,9 @@ class SalesProvider with ChangeNotifier {
     try {
       _setLoading(true);
       _errorMessage = '';
+      debugPrint("Fetching sales for user ID: $userId");
       _salesList = await _repository.getSales(userId);
+      debugPrint("Found ${_salesList.length} sales records");
     } catch (e) {
       _errorMessage = 'Failed to fetch sales: ${e.toString()}';
       debugPrint(_errorMessage);
@@ -34,7 +36,7 @@ class SalesProvider with ChangeNotifier {
     }
   }
 
-  Future addSale({
+  Future<bool> addSale({
     required String userId,
     required String customerId,
     required String customerName,
@@ -45,25 +47,24 @@ class SalesProvider with ChangeNotifier {
     required double totalAmount,
     required DateTime saleDate,
     required String paymentMethod,
-    required ProductProvider productProvider, // Add this parameter
+    required ProductProvider productProvider,
   }) async {
     try {
       _setLoading(true);
       _errorMessage = '';
 
-      // 1. Find the current product to get its details
+      // 1. Check if there's enough stock
       final currentProduct = productProvider.products.firstWhere(
         (product) => product.id == productId,
         orElse: () => throw Exception('Product not found'),
       );
 
-      // 2. Check if there's enough stock
       if (currentProduct.quantity < quantity) {
         throw Exception(
             'Not enough stock available. Only ${currentProduct.quantity} items left.');
       }
 
-      // 3. Create the sale record
+      // 2. Create the sale record
       final sale = SalesModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         userId: userId,
@@ -79,17 +80,15 @@ class SalesProvider with ChangeNotifier {
         paymentMethod: paymentMethod,
       );
 
-      // 4. Update product quantity (decrease stock)
-      await productProvider.updateProduct(
-        id: productId,
-        name: currentProduct.name,
-        description: currentProduct.description,
-        quantity: currentProduct.quantity - quantity,
-        price: currentProduct.price,
-      );
-
-      // 5. Add the sale record
+      // 3. Add the sale record to database
       await _repository.addSales(sale);
+
+      // 4. Update product stock - this is the ONLY place where stock should be updated
+      // The UI layer (AddSalesDetails) should NOT update stock again
+      await productProvider.updateProductStock(
+          productId, currentProduct.quantity - quantity);
+
+      // 5. Update local sales list
       _salesList.insert(0, sale);
       notifyListeners();
 
@@ -126,5 +125,25 @@ class SalesProvider with ChangeNotifier {
   double getTotalSalesByPaymentMethod(String paymentMethod) {
     return getSalesByPaymentMethod(paymentMethod)
         .fold(0.0, (sum, sale) => sum + sale.totalAmount);
+  }
+
+  // Calculate total sales amount for all sales
+  double getTotalSalesAmount() {
+    return _salesList.fold(0.0, (sum, sale) => sum + sale.totalAmount);
+  }
+
+  // Get total number of sales
+  int getTotalSalesCount() {
+    return _salesList.length;
+  }
+
+  // Get sales for a specific product
+  List<SalesModel> getSalesByProductId(String productId) {
+    return _salesList.where((sale) => sale.productId == productId).toList();
+  }
+
+  // Get sales for a specific customer
+  List<SalesModel> getSalesByCustomerId(String customerId) {
+    return _salesList.where((sale) => sale.customerId == customerId).toList();
   }
 }

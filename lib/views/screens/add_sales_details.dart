@@ -25,7 +25,7 @@ class _AddSalesDetailsState extends State<AddSalesDetails> {
   double _totalAmount = 0.0;
   final _auth = FirebaseAuth.instance;
 
-  // New fields
+  // Form fields
   DateTime _selectedDate = DateTime.now();
   String _selectedPaymentMethod = 'Cash';
   final List<String> _paymentMethods = [
@@ -115,6 +115,20 @@ class _AddSalesDetailsState extends State<AddSalesDetails> {
     }
   }
 
+  void _resetForm() {
+    setState(() {
+      _selectedCustomer = null;
+      _selectedProduct = null;
+      _quantityController.text = '1';
+      _totalAmount = 0.0;
+      _selectedDate = DateTime.now();
+      _selectedPaymentMethod = 'Cash';
+    });
+
+    // Reset form validation state
+    _formKey.currentState?.reset();
+  }
+
   void _saveSalesReport() async {
     if (_formKey.currentState!.validate() &&
         _selectedCustomer != null &&
@@ -150,61 +164,22 @@ class _AddSalesDetailsState extends State<AddSalesDetails> {
         });
 
         if (success) {
-          _updateProductStock(quantity);
-
-          // Show success message
+          // Show simplified success message
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.white),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'Sales report added successfully',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
+            const SnackBar(
+              content: Text('Sales report added successfully'),
               backgroundColor: AppColors.successColor,
-              duration: const Duration(seconds: 3),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
             ),
           );
 
-          // Reset form
-          setState(() {
-            _selectedCustomer = null;
-            _selectedProduct = null;
-            _quantityController.text = '1';
-            _totalAmount = 0.0;
-            _selectedDate = DateTime.now();
-            _selectedPaymentMethod = 'Cash';
-          });
-
-          _formKey.currentState!.reset();
+          // Reset all form fields
+          _resetForm();
         } else {
-          // Show error message
+          // Show simplified error message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.error, color: Colors.white),
-                  const SizedBox(width: 12),
-                  Text(
-                    salesProvider.errorMessage,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
+              content: Text(salesProvider.errorMessage),
               backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
             ),
           );
         }
@@ -215,43 +190,10 @@ class _AddSalesDetailsState extends State<AddSalesDetails> {
 
         // User not authenticated
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: const [
-                Icon(Icons.error, color: Colors.white),
-                SizedBox(width: 12),
-                Text(
-                  'User not authenticated. Please log in again.',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
+          const SnackBar(
+            content: Text('User not authenticated. Please log in again.'),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
           ),
-        );
-      }
-    }
-  }
-
-  void _updateProductStock(int quantity) async {
-    // Update product quantity after sale
-    if (_selectedProduct != null) {
-      final productProvider =
-          Provider.of<ProductProvider>(context, listen: false);
-      final updatedQuantity = _selectedProduct!.quantity - quantity;
-
-      if (updatedQuantity >= 0) {
-        await productProvider.updateProduct(
-          id: _selectedProduct!.id,
-          name: _selectedProduct!.name,
-          description: _selectedProduct!.description,
-          quantity: updatedQuantity,
-          price: _selectedProduct!.price,
         );
       }
     }
@@ -294,8 +236,6 @@ class _AddSalesDetailsState extends State<AddSalesDetails> {
   Widget build(BuildContext context) {
     final customerProvider = Provider.of<CustomerProvider>(context);
     final productProvider = Provider.of<ProductProvider>(context);
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: CustomAppBar(title: "Add Sales Report"),
@@ -373,10 +313,12 @@ class _AddSalesDetailsState extends State<AddSalesDetails> {
                       ),
                     ),
 
-                    // Customer Selection
+                    // Customer Selection - Only show loading on initial data fetch
                     _buildFormField(
                       label: 'Select Customer',
-                      field: customerProvider.isLoading
+                      field: customerProvider.isLoading &&
+                              customerProvider.isLoading &&
+                              customerProvider.customers.isEmpty
                           ? const Center(
                               child: CircularProgressIndicator(
                               color: AppColors.primaryColor,
@@ -421,10 +363,11 @@ class _AddSalesDetailsState extends State<AddSalesDetails> {
                             ),
                     ),
 
-                    // Product Selection
+                    // Product Selection - Only show loading on initial data fetch
                     _buildFormField(
                       label: 'Select Product',
-                      field: productProvider.isLoading
+                      field: productProvider.isLoading &&
+                              productProvider.products.isEmpty
                           ? const Center(
                               child: CircularProgressIndicator(
                               color: AppColors.primaryColor,

@@ -237,7 +237,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         return AlertDialog(
           title: Text('Delete Customer'),
           content: Text(
-            'Are you sure you want to delete this customer? This action cannot be undone.',
+            'Are you sure you want to remove this customer?',
           ),
           actions: [
             TextButton(

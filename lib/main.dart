@@ -30,10 +30,10 @@ class MyApp extends StatelessWidget {
             // Initialize with current user
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
-              debugPrint('👤 Found user: ${user.uid}');
+              debugPrint('Found user: ${user.uid}');
               provider.initialize(user.uid);
             } else {
-              debugPrint('⚠️ No authenticated user found');
+              debugPrint(' No authenticated user found');
             }
             return provider;
           },

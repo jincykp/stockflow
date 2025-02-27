@@ -54,6 +54,7 @@ class _AddCustomerState extends State<AddCustomer> {
                   controller: emailController,
                   hintText: "Enter email",
                   keyboardType: TextInputType.emailAddress,
+                  isEmail: true,
                   customValidator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Email is required";
@@ -73,6 +74,7 @@ class _AddCustomerState extends State<AddCustomer> {
                   controller: phoneController,
                   hintText: "Enter phone number",
                   keyboardType: TextInputType.phone,
+                  isMobileNumber: true,
                   customValidator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Phone is required";

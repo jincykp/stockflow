@@ -18,20 +18,13 @@ class SalesRepository {
 
   // Get all sales for a user
   Future<List<SalesModel>> getSales(String userId) async {
-    try {
-      final snapshot = await _firestore
-          .collection('sales')
-          .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .get();
+    // Add where clause to only get sales for the current user
+    final snapshot = await _firestore
+        .collection('sales')
+        .where('userId', isEqualTo: userId)
+        .get();
 
-      return snapshot.docs
-          .map((doc) => SalesModel.fromMap(doc.data()))
-          .toList();
-    } catch (e) {
-      debugPrint('Error fetching sales: $e');
-      throw e;
-    }
+    return snapshot.docs.map((doc) => SalesModel.fromMap(doc.data())).toList();
   }
 
   // Delete a sales record

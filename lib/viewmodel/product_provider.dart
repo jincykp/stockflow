@@ -124,6 +124,57 @@ class ProductProvider extends ChangeNotifier {
     }
   }
 
+  // Add this new method for updating product stock
+  Future<void> updateProductStock(String productId, int newQuantity) async {
+    if (_currentUserId == null || _currentUserId!.isEmpty) {
+      throw Exception("User not authenticated");
+    }
+
+    debugPrint(
+        '🔄 PROVIDER: Updating stock for product $productId to $newQuantity');
+    _isLoading = true;
+    _error = '';
+    notifyListeners();
+
+    try {
+      // Find the product in the local list
+      final productIndex = _products.indexWhere((p) => p.id == productId);
+
+      if (productIndex == -1) {
+        throw Exception("Product not found");
+      }
+
+      // Get the current product
+      final currentProduct = _products[productIndex];
+
+      // Create updated product with new quantity
+      final updatedProduct = ProductModel(
+        id: currentProduct.id,
+        userId: currentProduct.userId,
+        name: currentProduct.name,
+        description: currentProduct.description,
+        quantity: newQuantity,
+        price: currentProduct.price,
+        createdAt: currentProduct.createdAt,
+      );
+
+      // Update in database
+      await _repository.updateProduct(updatedProduct);
+
+      // Update in local list
+      _products[productIndex] = updatedProduct;
+
+      debugPrint('✅ PROVIDER: Stock updated successfully');
+    } catch (e) {
+      _error = "Error updating product stock: $e";
+      debugPrint(_error);
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> deleteProduct(String id) async {
     if (_currentUserId == null || _currentUserId!.isEmpty) {
       throw Exception("User not authenticated");

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:stockflow/repositories/product_repositories.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stockflow/model/product_model.dart';
-import 'package:stockflow/utils/theme/colors.dart';
 import 'package:stockflow/views/widgets/custom_appbar.dart';
 import 'package:stockflow/views/screens/home_page.dart';
 import 'package:stockflow/views/widgets/custom_form_builder.dart'; // Import the new widget
@@ -62,7 +61,7 @@ class _AddProductState extends State<AddProduct> {
                   hintText: "Enter quantity",
                   keyboardType: TextInputType.number,
                   customValidator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null || value.trim().isEmpty) {
                       return "Quantity is required";
                     }
                     if (int.tryParse(value) == null) {
@@ -82,7 +81,7 @@ class _AddProductState extends State<AddProduct> {
                   keyboardType: TextInputType.number,
                   prefixText: "\$",
                   customValidator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null || value.trim().isEmpty) {
                       return "Price is required";
                     }
                     if (double.tryParse(value) == null) {

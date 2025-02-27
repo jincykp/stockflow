@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockflow/services/auth_services.dart';
+import 'package:stockflow/utils/theme/colors.dart';
 import 'package:stockflow/views/screens/sales_report.dart';
 import 'package:stockflow/views/widgets/custom_appbar.dart';
 import 'package:stockflow/views/widgets/service_card.dart';
@@ -8,8 +10,28 @@ class Services extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AuthServices authServices = AuthServices();
     return Scaffold(
-      appBar: CustomAppBar(title: "Services"),
+      appBar: AppBar(
+        title: Text(
+          "Services",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: AppColors.primaryColor,
+        foregroundColor: AppColors.textColor,
+        actions: [
+          IconButton(
+            onPressed: () {
+              authServices.signOut(context);
+            },
+            icon: Icon(Icons.logout),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

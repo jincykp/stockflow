@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stockflow/utils/theme/colors.dart';
 
 class CustomFormBuilder extends StatelessWidget {
@@ -87,6 +88,8 @@ class CustomFormBuilder extends StatelessWidget {
     String prefixText = "",
     bool isRequired = true,
     String? Function(String?)? customValidator,
+    bool isMobileNumber = false,
+    bool isEmail = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,6 +116,20 @@ class CustomFormBuilder extends StatelessWidget {
             ],
           ),
           child: TextFormField(
+            inputFormatters: [
+              if (!isEmail && !isMobileNumber)
+                FilteringTextInputFormatter.allow(
+                    RegExp(r'[a-zA-Z0-9\s@._-]')), // Allow '@' for email
+              if (isMobileNumber) LengthLimitingTextInputFormatter(10),
+            ],
+            textInputAction: TextInputAction.next,
+            toolbarOptions: ToolbarOptions(
+              copy: true,
+              cut: false,
+              paste: false,
+              selectAll: true,
+            ),
+            textCapitalization: TextCapitalization.sentences,
             controller: controller,
             keyboardType: keyboardType,
             maxLines: maxLines,
@@ -132,7 +149,7 @@ class CustomFormBuilder extends StatelessWidget {
             ),
             validator: customValidator ??
                 (value) {
-                  if (isRequired && (value == null || value.isEmpty)) {
+                  if (isRequired && (value == null || value.trim().isEmpty)) {
                     return "$label is required";
                   }
                   return null;

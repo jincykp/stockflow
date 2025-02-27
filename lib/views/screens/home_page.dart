@@ -1,57 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:stockflow/services/auth_services.dart';
 import 'package:stockflow/utils/theme/colors.dart';
-import 'package:stockflow/utils/theme/text_styles.dart';
-import 'package:stockflow/views/screens/add_product.dart';
+import 'package:stockflow/views/screens/add_sales_details.dart';
 import 'package:stockflow/views/screens/customers.dart';
 import 'package:stockflow/views/screens/product.dart';
-import 'package:stockflow/views/screens/add_sales.dart';
 import 'package:stockflow/views/screens/services.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    AuthServices authServices = AuthServices();
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+  final List<Widget> _screens = [
+    Product(),
+    Customers(),
+    AddSalesDetails(),
+    Services(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: AppColors.textColor,
-        title: Text(
-          'Main Menu',
-          style: AppTextStyles.appBarText,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              authServices.signOut(context);
-            },
-            icon: Icon(Icons.logout),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => AddProduct()));
-        },
-        child: Icon(Icons.add),
-        backgroundColor: AppColors.primaryShadeTwoColor,
-        foregroundColor: AppColors.textColor,
-        shape: CircleBorder(),
-      ),
-      bottomNavigationBar: _buildBottomNavBar(context),
+      body: _screens[_selectedIndex],
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
-  Widget _buildBottomNavBar(BuildContext context) {
+  Widget _buildBottomNavigationBar() {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -63,42 +42,55 @@ class HomePage extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
       ),
-      child: BottomAppBar(
-        notchMargin: 5.0,
-        shape: CircularNotchedRectangle(),
-        clipBehavior: Clip.antiAlias,
-        color: Colors.transparent,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildNavItem(context, Icons.shopping_bag, 'Product', Product()),
-            _buildNavItem(context, Icons.people, 'Customers', Customers()),
-            _buildNavItem(context, Icons.bar_chart, 'Sales', SalesReport()),
-            _buildNavItem(
-                context, Icons.miscellaneous_services, 'Services', Services()),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(
-      BuildContext context, IconData icon, String label, Widget screen) {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => screen),
-        );
-      },
-      borderRadius: BorderRadius.circular(10),
-      splashColor: Colors.white.withOpacity(0.3), // Ripple effect
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: AppColors.textColor),
-          Text(label, style: AppTextStyles.bottomNavItmes),
+      child: BottomNavigationBar(
+        selectedLabelStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryColor),
+        unselectedLabelStyle: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+            color: AppColors.lightShadeColor),
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        selectedItemColor: AppColors.textColor,
+        unselectedItemColor: AppColors.textColor.withOpacity(0.6),
+        backgroundColor: Colors.transparent,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.shopping_bag,
+              size: 30,
+            ),
+            label: 'Products',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.people,
+              size: 30,
+            ),
+            label: 'Customers',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.bar_chart,
+              size: 30,
+            ),
+            label: 'Sales',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.miscellaneous_services,
+              size: 30,
+            ),
+            label: 'Services',
+          ),
         ],
       ),
     );

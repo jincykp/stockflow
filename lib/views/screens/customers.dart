@@ -82,14 +82,6 @@ class _CustomersState extends State<Customers> {
                     style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AddCustomer()),
-                    ),
-                    icon: Icon(Icons.person_add_outlined),
-                    label: Text('Add Your First Customer'),
-                  ),
                 ],
               ),
             );
