@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stockflow/services/auth_services.dart';
 import 'package:stockflow/utils/theme/colors.dart';
+import 'package:stockflow/views/screens/customer_list_screen.dart'; // Create this
 import 'package:stockflow/views/screens/item_report_screen.dart';
 import 'package:stockflow/views/screens/sales_report.dart';
-
 import 'package:stockflow/views/widgets/service_card.dart';
 
 class Services extends StatelessWidget {
@@ -14,7 +14,7 @@ class Services extends StatelessWidget {
     AuthServices authServices = AuthServices();
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Services",
           style: TextStyle(
             fontSize: 20,
@@ -29,7 +29,7 @@ class Services extends StatelessWidget {
             onPressed: () {
               authServices.signOut(context);
             },
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
           ),
         ],
       ),
@@ -77,7 +77,18 @@ class Services extends StatelessWidget {
               description:
                   "All transactions related to the customer are displayed here",
               icon: Icons.person,
-              onTap: () {},
+              onTap: () {
+                // Navigate to customer selection screen first
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CustomerListScreen(
+                      selectionMode: true,
+                      title: "Select Customer for Ledger",
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -85,5 +96,3 @@ class Services extends StatelessWidget {
     );
   }
 }
-
-// Custom Card Widget for Services
