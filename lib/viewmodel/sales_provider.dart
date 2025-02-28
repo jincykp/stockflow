@@ -25,11 +25,35 @@ class SalesProvider with ChangeNotifier {
     try {
       _setLoading(true);
       _errorMessage = '';
+
+      if (userId.isEmpty) {
+        _errorMessage = 'Cannot fetch sales: User ID is empty';
+        debugPrint(_errorMessage);
+        return;
+      }
+
       debugPrint("Fetching sales for user ID: $userId");
-      _salesList = await _repository.getSales(userId);
-      debugPrint("Found ${_salesList.length} sales records");
+
+      // Get timestamp before fetch
+      final beforeTime = DateTime.now();
+      final salesData = await _repository.getSales(userId);
+      final afterTime = DateTime.now();
+
+      debugPrint(
+          "Firebase query took ${afterTime.difference(beforeTime).inMilliseconds}ms");
+      debugPrint("Firebase returned ${salesData.length} records");
+
+      // Add detailed info about first few records
+      if (salesData.isNotEmpty) {
+        debugPrint(
+            "Sample sales data: ID=${salesData[0].id}, Product=${salesData[0].productName}, Date=${salesData[0].saleDate.toDate()}");
+      }
+
+      _salesList = salesData;
+      notifyListeners(); // Make sure to call notifyListeners() here
     } catch (e) {
       _errorMessage = 'Failed to fetch sales: ${e.toString()}';
+      debugPrint("Error stack trace: ${StackTrace.current}");
       debugPrint(_errorMessage);
     } finally {
       _setLoading(false);

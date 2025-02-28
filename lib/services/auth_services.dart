@@ -17,8 +17,9 @@ class AuthServices {
       return cred.user;
     } catch (e) {
       log(e.toString());
+      // Re-throw the error so the calling function knows something went wrong
+      throw e;
     }
-    return null;
   }
 
   Future<User?> logInUserWithEmailAndPassword(

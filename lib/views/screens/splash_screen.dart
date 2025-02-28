@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stockflow/services/auth_state_manager.dart';
 import 'package:stockflow/utils/theme/colors.dart';
 import 'package:stockflow/views/screens/home_page.dart';
-import 'package:stockflow/views/screens/login_page.dart';
+import 'package:stockflow/views/screens/login_Page.dart';
 import 'package:stockflow/views/screens/signup_page.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,20 +19,36 @@ class _SplashScreenState extends State<SplashScreen> {
     _checkAuthState();
   }
 
-  Future<void> _checkAuthState() async {
-    // Add a small delay to show splash screen
+  Future _checkAuthState() async {
     await Future.delayed(Duration(seconds: 2));
 
-    final isFirstTime = await AuthStateManager.isFirstTimeUser();
-    final isLoggedIn = await AuthStateManager.isLoggedIn();
+    // Check both Firebase and SharedPreferences
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    final isLoggedInFirebase = firebaseUser != null;
 
+    final isFirstTime = await AuthStateManager.isFirstTimeUser();
+    final isLoggedInPrefs = await AuthStateManager.isLoggedIn();
+
+    print(
+        "Debug - Firebase logged in: $isLoggedInFirebase, SharedPrefs logged in: $isLoggedInPrefs");
+
+    // If there's a mismatch, sync them
+    if (isLoggedInFirebase != isLoggedInPrefs) {
+      if (isLoggedInFirebase) {
+        await AuthStateManager.setLoggedIn();
+      } else {
+        await AuthStateManager.setLoggedOut();
+      }
+    }
+
+    // Use Firebase auth as the source of truth
     if (mounted) {
       if (isFirstTime) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SignupPage()),
         );
-      } else if (isLoggedIn) {
+      } else if (isLoggedInFirebase) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),

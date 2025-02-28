@@ -36,8 +36,13 @@ class _SalesReportScreenState extends State<SalesReportScreen>
     // Fetch latest sales data when the screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final salesProvider = Provider.of<SalesProvider>(context, listen: false);
-      final userId =
-          Provider.of<UserProvider>(context, listen: false).user?.uid ?? '';
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final userId = userProvider.user?.uid ?? '';
+
+      debugPrint("SalesReportScreen - User ID for fetch: $userId");
+      debugPrint(
+          "SalesReportScreen - User authenticated: ${userProvider.user != null}");
+
       salesProvider.fetchSales(userId);
     });
   }

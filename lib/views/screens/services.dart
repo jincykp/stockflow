@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stockflow/services/auth_services.dart';
 import 'package:stockflow/utils/theme/colors.dart';
+import 'package:stockflow/views/screens/item_report_screen.dart';
 import 'package:stockflow/views/screens/sales_report.dart';
-import 'package:stockflow/views/widgets/custom_appbar.dart';
+
 import 'package:stockflow/views/widgets/service_card.dart';
 
 class Services extends StatelessWidget {
@@ -59,12 +60,12 @@ class Services extends StatelessWidget {
               description: "Check inventory and item performance",
               icon: Icons.inventory,
               onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const ItemsReportScreen(),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ItemReportScreen(),
+                  ),
+                );
               },
             ),
 

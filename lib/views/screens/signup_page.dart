@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockflow/services/auth_services.dart';
@@ -26,26 +27,38 @@ class _SignupPageState extends State<SignupPage> {
     if (!formKey.currentState!.validate()) return;
 
     setState(() {
-      _isLoading = true; // Start loading
+      _isLoading = true;
     });
 
     try {
-      await authServices.createUserWithEmailAndPassword(
+      // Store the returned user
+      User? user = await authServices.createUserWithEmailAndPassword(
         emailController.text,
         passwordController.text,
       );
-      await AuthStateManager.setLoggedIn(); // Set login state
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-        (route) => false,
-      );
+
+      if (user != null) {
+        bool stateSet = await AuthStateManager.setLoggedIn();
+        print("Auth state successfully set: $stateSet");
+
+        // Verify login state was saved
+        bool isLoggedIn = await AuthStateManager.isLoggedIn();
+        print("User is logged in after signup: $isLoggedIn");
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+          (route) => false,
+        );
+      }
     } catch (error) {
       print("Signup Error: $error");
-      // Optional: Show error message to user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Signup failed: ${error.toString()}")),
+      );
     } finally {
       setState(() {
-        _isLoading = false; // Stop loading regardless of success/failure
+        _isLoading = false;
       });
     }
   }
