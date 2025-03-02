@@ -22,6 +22,21 @@ class _ProductState extends State<Product> {
   bool _initialFetchDone = false;
 
   @override
+  void initState() {
+    super.initState();
+
+    // Perform initialization after the widget is fully built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        debugPrint('Initializing with user: ${user.uid}');
+        Provider.of<ProductProvider>(context, listen: false)
+            .initialize(user.uid);
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
@@ -29,11 +44,8 @@ class _ProductState extends State<Product> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      debugPrint(' Initializing with user: ${user.uid}');
-      Provider.of<ProductProvider>(context, listen: false).initialize(user.uid);
-    }
+    // Remove the duplicate initialization from here
+    // This was causing the error
 
     return Scaffold(
       appBar: _isSearching
@@ -111,17 +123,17 @@ class _ProductState extends State<Product> {
             ),
       body: Consumer<ProductProvider>(
         builder: (context, productProvider, child) {
-          debugPrint(' Product Widget rebuilt');
+          debugPrint('Product Widget rebuilt');
 
           // Check if we need to fetch data first
           if (productProvider.products.isEmpty &&
               !productProvider.isLoading &&
               productProvider.error.isEmpty &&
               !_initialFetchDone) {
-            debugPrint(' Triggering initial fetch');
+            debugPrint('Triggering initial fetch');
             _initialFetchDone = true; // Prevent multiple fetch calls
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              debugPrint(' Post frame callback triggered');
+              debugPrint('Post frame callback triggered');
               productProvider.fetchProducts();
             });
             return Center(

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:stockflow/model/sales_model.dart';
+import 'package:stockflow/repositories/download.dart';
+import 'package:stockflow/repositories/export_files.dart';
+import 'package:stockflow/utils/theme/colors.dart';
 import 'package:stockflow/viewmodel/sales_provider.dart';
 import 'package:stockflow/viewmodel/user_provider.dart';
 import 'package:stockflow/views/widgets/custom_appbar.dart';
@@ -56,7 +59,101 @@ class _SalesReportScreenState extends State<SalesReportScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Sales Report"),
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryColor,
+        foregroundColor: AppColors.textColor,
+        title: Text(
+          "Sales Report",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              final salesProvider =
+                  Provider.of<SalesProvider>(context, listen: false);
+              final filteredSales = _getFilteredSales(salesProvider);
+
+              if (value == "Print") {
+                final exporter = ExportFiles();
+                exporter.printSalesReport(
+                  context,
+                  filteredSales
+                      .map((sale) => {
+                            'date': sale.saleDate.toDate().toString(),
+                            'customer': sale.customerName,
+                            'product': sale.productName,
+                            'totalAmount': sale.totalAmount.toString()
+                          })
+                      .toList(),
+                );
+              } else if (value == "Excel") {
+                final exporter = ExportFiles();
+                exporter.downloadExcel(
+                  context,
+                  filteredSales
+                      .map((sale) => {
+                            'date': sale.saleDate.toDate().toString(),
+                            'customer': sale.customerName,
+                            'product': sale.productName,
+                            'totalAmount': sale.totalAmount.toString()
+                          })
+                      .toList(),
+                );
+              } else if (value == "PDF") {
+                final exporter = ExportFiles();
+                exporter.downloadPdf(
+                  context,
+                  filteredSales
+                      .map((sale) => {
+                            'date': sale.saleDate.toDate().toString(),
+                            'customer': sale.customerName,
+                            'product': sale.productName,
+                            'totalAmount': sale.totalAmount.toString()
+                          })
+                      .toList(),
+                );
+              } else if (value == "PDF") {
+                final exporter = ExportFiles();
+                exporter.downloadPdf(
+                  context,
+                  filteredSales
+                      .map((sale) => {
+                            'date': sale.saleDate.toDate().toString(),
+                            'customer': sale.customerName,
+                            'totalAmount': sale.totalAmount.toString()
+                          })
+                      .toList(),
+                );
+              } else if (value == "Email") {
+                final exporter = ExportFiles();
+                exporter.sendEmail(
+                  context,
+                  filteredSales
+                      .map((sale) => {
+                            'date': sale.saleDate.toDate().toString(),
+                            'customer': sale.customerName,
+                            'product': sale.productName,
+                            'totalAmount': sale.totalAmount.toString()
+                          })
+                      .toList(),
+                );
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem(value: "Print", child: Text("Print")),
+              const PopupMenuItem(
+                  value: "Excel", child: Text("Export to Excel")),
+              const PopupMenuItem(value: "PDF", child: Text("Export to PDF")),
+              const PopupMenuItem(
+                  value: "Email", child: Text("Send via Email")),
+            ],
+            icon: const Icon(Icons.more_vert),
+          ),
+        ],
+      ),
       body: Consumer<SalesProvider>(
         builder: (context, salesProvider, child) {
           if (salesProvider.isLoading) {
@@ -67,7 +164,7 @@ class _SalesReportScreenState extends State<SalesReportScreen>
             return Center(
               child: Text(
                 salesProvider.errorMessage,
-                style: const TextStyle(color: Colors.red),
+                style: const TextStyle(color: AppColors.warningColor),
               ),
             );
           }
@@ -232,49 +329,64 @@ class _SalesReportScreenState extends State<SalesReportScreen>
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         children: [
-          _buildSummaryCard('Total Sales',
-              'Rs. ${totalSales.toStringAsFixed(2)}', Colors.blue),
+          Expanded(
+            flex: 1,
+            child: _buildSummaryCard('Total Sales',
+                'Rs. ${totalSales.toStringAsFixed(2)}', Colors.blue),
+          ),
           const SizedBox(width: 12),
-          _buildSummaryCard('Items Sold', totalItems.toString(), Colors.green),
+          Expanded(
+            flex: 1,
+            child: _buildSummaryCard(
+                'Items Sold', totalItems.toString(), Colors.green),
+          ),
           const SizedBox(width: 12),
-          _buildSummaryCard(
-              'Customers', uniqueCustomers.toString(), Colors.orange),
+          Expanded(
+            flex: 1,
+            child: _buildSummaryCard(
+                'Customers', uniqueCustomers.toString(), Colors.orange),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildSummaryCard(String title, String value, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 14,
-                color: color,
-                fontWeight: FontWeight.w500,
-              ),
+    return Container(
+      height: 80, // Reduced height
+      padding: const EdgeInsets.symmetric(
+          horizontal: 12, vertical: 10), // Smaller padding
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8), // Slightly smaller radius
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment:
+            MainAxisAlignment.spaceBetween, // Ensures even spacing
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12, // Reduced font size
+              color: color,
+              fontWeight: FontWeight.w500,
             ),
-            const SizedBox(height: 8),
-            Text(
+          ),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
               value,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 16, // Reduced font size
                 fontWeight: FontWeight.bold,
                 color: color.withOpacity(0.8),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

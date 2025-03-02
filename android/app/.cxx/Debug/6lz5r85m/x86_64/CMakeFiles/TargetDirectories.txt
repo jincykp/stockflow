@@ -1,0 +1,2 @@
+C:/Users/ACER/Desktop/stockflow/android/app/.cxx/Debug/6lz5r85m/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/ACER/Desktop/stockflow/android/app/.cxx/Debug/6lz5r85m/x86_64/CMakeFiles/rebuild_cache.dir
