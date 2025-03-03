@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:stockflow/model/product_model.dart';
+import 'package:stockflow/repositories/item_export_files.dart';
 import 'package:stockflow/utils/theme/colors.dart';
 import 'package:stockflow/viewmodel/product_provider.dart';
 
@@ -24,6 +25,7 @@ class _ItemReportScreenState extends State<ItemReportScreen> {
     });
   }
 
+  final ItemExportFiles _exportFiles = ItemExportFiles();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +40,36 @@ class _ItemReportScreenState extends State<ItemReportScreen> {
               Provider.of<ProductProvider>(context, listen: false)
                   .fetchProducts();
             },
+          ),
+          // Add this line
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              // Get the product list from provider
+              final products =
+                  Provider.of<ProductProvider>(context, listen: false).products;
+
+              switch (value) {
+                case 'Print':
+                  _exportFiles.printInventoryReport(context, products);
+                  break;
+                case 'Excel':
+                  _exportFiles.downloadExcel(context, products);
+                  break;
+                case 'Pdf':
+                  _exportFiles.downloadPdf(context, products);
+                  break;
+                case 'Email':
+                  _exportFiles.sendEmail(context, products);
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'Print', child: Text('Print')),
+              PopupMenuItem(value: 'Excel', child: Text('Excel')),
+              PopupMenuItem(value: 'Pdf', child: Text('Pdf')),
+              PopupMenuItem(value: 'Email', child: Text('Email')),
+            ],
+            icon: Icon(Icons.more_vert),
           ),
         ],
       ),
@@ -184,7 +216,12 @@ class _ItemReportScreenState extends State<ItemReportScreen> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(
-        columns: const [
+        columnSpacing: 50,
+        horizontalMargin: 24, // Margin on left and right of the table
+        headingRowHeight: 60, // More height for the header row
+        dataRowHeight: 70,
+        // Remove dataRowMinHeight or dataRowHeight to let rows adjust naturally
+        columns: [
           DataColumn(label: Text('Name')),
           DataColumn(label: Text('Description')),
           DataColumn(label: Text('Quantity'), numeric: true),
@@ -208,11 +245,17 @@ class _ItemReportScreenState extends State<ItemReportScreen> {
           return DataRow(
             cells: [
               DataCell(Text(product.name)),
-              DataCell(Text(
-                product.description,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              )),
+              DataCell(
+                Container(
+                  width: 200, // Fixed width
+                  child: Text(
+                    product.description,
+                    overflow: TextOverflow.ellipsis, // Show ellipsis
+                    maxLines: 2, // Show only 2 lines
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ),
               DataCell(Text('${product.quantity}')),
               DataCell(Text(currencyFormat.format(product.price))),
               DataCell(Text(currencyFormat.format(totalValue))),

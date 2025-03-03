@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:stockflow/model/sales_model.dart';
-import 'package:stockflow/repositories/download.dart';
-import 'package:stockflow/repositories/export_files.dart';
+import 'package:stockflow/repositories/sales_export_files.dart';
 import 'package:stockflow/utils/theme/colors.dart';
 import 'package:stockflow/viewmodel/sales_provider.dart';
 import 'package:stockflow/viewmodel/user_provider.dart';
-import 'package:stockflow/views/widgets/custom_appbar.dart';
 import 'package:stockflow/views/widgets/loading_widget.dart';
 
 class SalesReportScreen extends StatefulWidget {
