@@ -287,6 +287,7 @@ class _ProductState extends State<Product> {
               context, MaterialPageRoute(builder: (context) => AddProduct()));
         },
         child: const Icon(Icons.add),
+        tooltip: 'Add Product',
         backgroundColor: AppColors.primaryShadeTwoColor,
         foregroundColor: AppColors.textColor,
         shape: const CircleBorder(),
