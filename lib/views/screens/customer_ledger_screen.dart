@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stockflow/model/customer_ledger_model.dart';
 import 'package:stockflow/model/customer_model.dart';
 import 'package:stockflow/model/sales_model.dart';
+import 'package:stockflow/repositories/customer_ledger_export.dart';
 import 'package:stockflow/utils/theme/colors.dart';
 import 'package:intl/intl.dart';
 
@@ -109,6 +110,30 @@ class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
     balance = totalPurchases - totalPayments;
   }
 
+// In your CustomerLedgerScreen class, add this method:
+  void _exportData(String format) {
+    final ledgerExport = CustomerLedgerExport(
+      customer: widget.customer,
+      transactions: allTransactions,
+      balance: balance,
+    );
+
+    switch (format) {
+      case 'Print':
+        ledgerExport.printLedgerReport(context);
+        break;
+      case 'Excel':
+        ledgerExport.downloadExcel(context);
+        break;
+      case 'Pdf':
+        ledgerExport.downloadPdf(context);
+        break;
+      case 'Email':
+        ledgerExport.sendEmail(context);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,8 +142,23 @@ class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
         foregroundColor: AppColors.textColor,
         title: Text(
           "${widget.customer.name} - Details",
+          style: TextStyle(fontWeight: FontWeight.bold),
           overflow: TextOverflow.ellipsis,
         ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              _exportData(value);
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'Print', child: Text('Print')),
+              PopupMenuItem(value: 'Excel', child: Text('Excel')),
+              PopupMenuItem(value: 'Pdf', child: Text('Pdf')),
+              PopupMenuItem(value: 'Email', child: Text('Email')),
+            ],
+            icon: Icon(Icons.more_vert),
+          ),
+        ],
         centerTitle: true,
       ),
       body: isLoading

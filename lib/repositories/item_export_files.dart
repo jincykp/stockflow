@@ -200,6 +200,7 @@ class ItemExportFiles {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+              backgroundColor: AppColors.successColor,
               content: Text("Excel file saved at: $filePath"),
               duration: Duration(seconds: 3)),
         );
@@ -395,6 +396,7 @@ class ItemExportFiles {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+              backgroundColor: AppColors.successColor,
               content:
                   Text("Email prepared with inventory report attachments")),
         );
